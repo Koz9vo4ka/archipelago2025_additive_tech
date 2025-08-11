@@ -74,7 +74,7 @@ class DroneDataVisualization:
             return True
         return False
 
-    def __draw_grid(self):
+    def __draw_grid(self) -> None:
         for ind_x in range(-20, 20):
             pygame.draw.line(self.__screen, (150, 150, 150), (self.zero_px[0] + self.__PIXELS_PER_METER * ind_x, 0), (self.zero_px[0] + self.__PIXELS_PER_METER * ind_x, 1_000))
         
