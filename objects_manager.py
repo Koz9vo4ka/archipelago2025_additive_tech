@@ -11,7 +11,7 @@ get_json_data() - для получения данных из файла
 from enum import IntEnum
 from typing import List, Dict
 from grock_algoritm import calc_mean_objects, sorted_by_dist
-import pygame_map
+import drone_pygame_map
 import json
 from math import radians, cos, sin
 from test_dist_eval import calc_dist

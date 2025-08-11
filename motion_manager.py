@@ -76,20 +76,12 @@ class StateMachine:
             self.__targets.pop(0)
 
 
-def calculate_yaw(robot_x, robot_y, object_x, object_y):
-    dx = object_x - robot_x
-    dy = object_y - robot_y
-    yaw = math.atan2(dy, dx)
-    return yaw  # в радианах
+    def __calculate_yaw(robot_x, robot_y, object_x, object_y):
+        dx = object_x - robot_x
+        dy = object_y - robot_y
+        yaw = math.atan2(dy, dx)
+        return yaw  # в радианах
 
-
-def set_target(x, y, target_points: List) -> Tuple:
-    target_yaw = calculate_yaw(x, y, *target_points[0][:2])
-    target = target_points[0][:2] + [target_yaw]
-
-    # print(f"{target=}           {x=}, {y=}")
-
-    return target
 
 if __name__ == "__main__":
     pass
