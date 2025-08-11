@@ -12,8 +12,8 @@ class DroneMission:
     def __init__(self, drone_ip: str) -> None:  
         self.__start_time = time.time()      
         self.__DRONE_IP = drone_ip
-        self.__result = []
         self.__last_time_photo = 0
+        self.__result = []
         
         self.__mission_plan = [
             # go forward and back
@@ -43,20 +43,20 @@ class DroneMission:
         
 
     def __connect_to_drone(self) -> None:
-        print(self.drone.connect(self.__DRONE_IP, reset_state=True))
+        print(self.__client.connect(self.__DRONE_IP, reset_state=True))
 
     def __taking_off(self, altitude: float) -> None:
-        self.drone.set_height(altitude)
+        self.__client.set_height(altitude)
         print(f"TAKE OFF!! set_height = {altitude}")
     
     def __process_detections_and_display(self) -> None:
-        img = self.drone.get_image()
-        x, y = self.drone.get_nav_pose()
-        yaw = self.drone.get_rpy()[2]
+        img = self.__client.get_image()
+        x, y = self.__client.get_nav_pose()
+        yaw = self.__client.get_rpy()[2]
 
         self.motion_machine.process(x, y, yaw)
         
-        obj_manager.process_detections(self.drone.get_detections(), [x, y], yaw)
+        obj_manager.process_detections(self.__client.get_detections(), [x, y], yaw)
         peoples, fires = obj_manager.get_sorted_detections()
         self.pygame_visualization.update([x, y, yaw], [], peoples, fires)
 
@@ -67,16 +67,16 @@ class DroneMission:
     
     def __check_mission_status(self) -> bool:
         if self.motion_machine.is_mission_end():
-            self.drone.landing_nb()
+            self.__client.landing_nb()
             print("LANDING!!")
             return False
         return True
     
     def __periodic_save_detections(self) -> None:
-        if abs(self.last_time_photo - time.time()) > 3:
+        if abs(self.__last_time_photo - time.time()) > 3:
             peoples, fires = obj_manager.get_sorted_detections()
             obj_manager.save_detections(peoples, fires)
-            self.last_time_photo = time.time()
+            self.__last_time_photo = time.time()
     
     def run_mission(self) -> None:
         self.__connect_to_drone()
