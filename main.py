@@ -1,10 +1,11 @@
 from drone_control_api import Drone
-import objects_manager as obj_manager 
-from motion_manager import StateMachine
-import time
-import cv2
 
 from drone_pygame_map import DroneDataVisualization
+from motion_manager import StateMachine
+import objects_manager as obj_manager 
+
+import time
+import cv2
 
 
 class DroneMission:
