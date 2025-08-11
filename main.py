@@ -4,7 +4,7 @@ from motion_manager import StateMachine
 import time
 import cv2
 
-from drone_pygame_map import DroneDataVisualization()
+from drone_pygame_map import DroneDataVisualization
 
 
 class DroneMission:
