@@ -26,9 +26,14 @@ class DroneDataVisualization:
         self.__ROUTE_IMG = self.__load_image('imgs/route.png')
         self.__DRONE_IMG = self.__load_image('imgs/drone.png')
         
-        self.pole_size = 8
+        # TODO сделать словарём
+        self.__LIST_FLOWERS = [self.__load_image('imgs/white_flower.png'), self.__load_image('imgs/red_flower.png'), self.__load_image('imgs/purple_flower.png')]
+        
+        self.__DRONE_IMG = self.__load_image('imgs/drone.png')
+        
+        self.pole_size = [8, 8]
 
-        self.__PIXELS_PER_METER = 579 / self.pole_size  # 579 - ширина в px, 6.153 - длина помещения в метра
+        self.__PIXELS_PER_METER = 565 / max(self.pole_size)  # 579 - ширина в px, 6.153 - длина помещения в метра
 
     def __load_image(self, src: str, color_key: List=[255, 255, 255]) -> pygame.Surface:
         item_img = pygame.image.load(src).convert()  
@@ -49,7 +54,7 @@ class DroneDataVisualization:
     def __m_2_px(self, pixels) -> List[float]:
         return int(pixels * self.__PIXELS_PER_METER)
     
-    def __blit_coordinates(self, x_meters: float, y_meters: float, picture_offset: int = 20) -> None:
+    def __blit_coordinates(self, x_meters: float, y_meters: float, picture_offset: int = 30) -> None:
         text_surface = self.__font.render(f"X: {round(x_meters,1)} Y: {round(y_meters,1)}", True, self.__WHITE)  # Текст, сглаживание, цвет
         size_x, _ = text_surface.get_size()
         surface_size_offset = [picture_offset, -size_x // 2]
@@ -81,15 +86,17 @@ class DroneDataVisualization:
         for ind_y in range(-20, 20):
             pygame.draw.line(self.__screen, (150, 150, 150), (0, self.zero_px[1] + self.__PIXELS_PER_METER * ind_y), (1_000, self.zero_px[1] + self.__PIXELS_PER_METER * ind_y))
             
-        x, y = self.__meters_2_pixels(self.pole_size, self.pole_size)
+        x, y = self.__meters_2_pixels(self.pole_size[0]+1, self.pole_size[1]+1)
+        
+        x_1,y_1 = self.__meters_2_pixels(-0.5, -0.5)
 
         pygame.draw.rect(self.__screen,
             (255, 100, 100),
-            (x - self.__m_2_px(0.5), y - self.__m_2_px(0.5), (self.zero_px[0] - x) + self.__m_2_px(1), (self.zero_px[1] - y) + self.__m_2_px(1)),
+            (x, y, x_1, y_1),
             1
         )
 
-    def update(self, drone_coordinate: List, route: List) -> None:
+    def update(self, drone_coordinate: List, route: List, flowers: List=[int, List]) -> None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pass
@@ -101,6 +108,11 @@ class DroneDataVisualization:
         self.__screen.fill((36,105,61))
         self.__draw_grid()
         
+        for id_flower, flower_coordinate in flowers:
+            self.__blit_image(self.__LIST_FLOWERS[id_flower], *flower_coordinate)
+            self.__blit_coordinates(*flower_coordinate)
+        
+        # TODO у нас нет пути
         for point in route:
             self.__blit_image(self.__ROUTE_IMG, *point[:2], point[2])
             self.__blit_coordinates(*point[:2])
@@ -111,21 +123,9 @@ class DroneDataVisualization:
 
         pygame.display.flip()
 
-    def run(self) -> None:
+    def run(self, ) -> None:
         while True:
-            self.update([0, 0.0, 0], [
-        [4.25,0, (0)],
-        [0.5, 0, (180)],
-        [0.5, 3, (90)],
-        [1.5, 3, (0)],
-        [1.5, 5.5, (90)],
-        [0.0, 5.5, (180)],
-        [1.5, 5.5, (0)],
-        [1.5, 3, (-90)],
-        [0.5, 3, (180)],
-        [0.5, 0, (-90)],
-        [0.0, 0, (180)],
-    ])
+            self.update([0, 0.0, 0], [], [[1, [1, 5]], [0, [1, 6]], [2, [1, 7]]])
 
 
 if __name__ == "__main__":
