@@ -27,7 +27,11 @@ class DroneDataVisualization:
         self.__DRONE_IMG = self.__load_image('imgs/drone.png')
         
         # TODO сделать словарём
-        self.__LIST_FLOWERS = [self.__load_image('imgs/white_flower.png'), self.__load_image('imgs/red_flower.png'), self.__load_image('imgs/purple_flower.png')]
+        self.__LIST_FLOWERS = [
+            self.__load_image('imgs/white_flower.png'), 
+            self.__load_image('imgs/red_flower.png'), 
+            self.__load_image('imgs/purple_flower.png')
+        ]
         
         self.__DRONE_IMG = self.__load_image('imgs/drone.png')
         
@@ -43,16 +47,16 @@ class DroneDataVisualization:
 
     @property
     def zero_px(self) -> List[float]:
-        return [self.__zero[0] + self.__offset[0] * self.__PIXELS_PER_METER, self.__zero[1] + self.__offset[1] * self.__PIXELS_PER_METER]
+        return [
+            self.__zero[0] + self.__offset[0] * self.__PIXELS_PER_METER, 
+            self.__zero[1] + self.__offset[1] * self.__PIXELS_PER_METER
+        ]
 
     def __meters_2_pixels(self, x: float, y: float = 0) -> List[float]:
         return [
             -x * self.__PIXELS_PER_METER + self.zero_px[1],  # на экране ось направленна вниз, нам надо вверх
             -y * self.__PIXELS_PER_METER + self.zero_px[0]  # на экране ось направлена вправо, нам надо влево
         ]
-    
-    def __m_2_px(self, pixels) -> List[float]:
-        return int(pixels * self.__PIXELS_PER_METER)
     
     def __blit_coordinates(self, x_meters: float, y_meters: float, picture_offset: int = 30) -> None:
         text_surface = self.__font.render(f"X: {round(x_meters,1)} Y: {round(y_meters,1)}", True, self.__WHITE)  # Текст, сглаживание, цвет
@@ -92,6 +96,7 @@ class DroneDataVisualization:
 
         pygame.draw.rect(self.__screen,
             (255, 100, 100),
+            # TODO это работает правильно, там не x, y, w, h?
             (x, y, x_1, y_1),
             1
         )
@@ -112,7 +117,6 @@ class DroneDataVisualization:
             self.__blit_image(self.__LIST_FLOWERS[id_flower], *flower_coordinate)
             self.__blit_coordinates(*flower_coordinate)
         
-        # TODO у нас нет пути
         for point in route:
             self.__blit_image(self.__ROUTE_IMG, *point[:2], point[2])
             self.__blit_coordinates(*point[:2])
