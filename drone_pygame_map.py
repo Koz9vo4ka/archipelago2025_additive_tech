@@ -26,12 +26,11 @@ class DroneDataVisualization:
         self.__ROUTE_IMG = self.__load_image('imgs/route.png')
         self.__DRONE_IMG = self.__load_image('imgs/drone.png')
         
-        # TODO сделать словарём
-        self.__LIST_FLOWERS = [
-            self.__load_image('imgs/white_flower.png'), 
-            self.__load_image('imgs/red_flower.png'), 
-            self.__load_image('imgs/purple_flower.png')
-        ]
+        self.__LIST_FLOWERS = {
+            "white_flower": self.__load_image('imgs/white_flower.png'), 
+            "red_flower": self.__load_image('imgs/red_flower.png'), 
+            "green_flower": self.__load_image('imgs/purple_flower.png')
+        }
         
         self.__DRONE_IMG = self.__load_image('imgs/drone.png')
         
@@ -90,14 +89,12 @@ class DroneDataVisualization:
         for ind_y in range(-20, 20):
             pygame.draw.line(self.__screen, (150, 150, 150), (0, self.zero_px[1] + self.__PIXELS_PER_METER * ind_y), (1_000, self.zero_px[1] + self.__PIXELS_PER_METER * ind_y))
             
-        x, y = self.__meters_2_pixels(self.pole_size[0]+1, self.pole_size[1]+1)
-        
-        x_1,y_1 = self.__meters_2_pixels(-0.5, -0.5)
+        x, y, w, h = *self.__meters_2_pixels(self.pole_size[0]+1, self.pole_size[1]+1), *self.__meters_2_pixels(-0.5, -0.5)
 
         pygame.draw.rect(self.__screen,
             (255, 100, 100),
             # TODO это работает правильно, там не x, y, w, h?
-            (x, y, x_1, y_1),
+            (x, y, w, h),
             1
         )
 
@@ -113,9 +110,11 @@ class DroneDataVisualization:
         self.__screen.fill((36,105,61))
         self.__draw_grid()
         
-        for id_flower, flower_coordinate in flowers:
-            self.__blit_image(self.__LIST_FLOWERS[id_flower], *flower_coordinate)
-            self.__blit_coordinates(*flower_coordinate)
+        for name_flower, flower_coordinates in flowers.items():
+            flower_coordinates = list(map(lambda flower: flower["point"], flower_coordinates))
+            for flower_coordinate in flower_coordinates:
+                self.__blit_image(self.__LIST_FLOWERS[name_flower], *flower_coordinate)
+                self.__blit_coordinates(*flower_coordinate)
         
         for point in route:
             self.__blit_image(self.__ROUTE_IMG, *point[:2], point[2])
@@ -129,7 +128,7 @@ class DroneDataVisualization:
 
     def run(self, ) -> None:
         while True:
-            self.update([0, 0.0, 0], [], [[1, [1, 5]], [0, [1, 6]], [2, [1, 7]]])
+            self.update([0, 0.0, 0], [], {'red_flower': [{'point': [-0.7165898660956542, -3.632798739302884], 'count': 1}, {'point': [-0.7165898660956542, -1.036095611881429], 'count': 1}], 'green_flower': [{'point': [-0.7165898660956542, -0.6409108270621491], 'count': 1}], 'white_flower': [{'point': [-0.7165898660956542, -0.35780572131452393], 'count': 1}]})
 
 
 if __name__ == "__main__":

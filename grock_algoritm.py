@@ -4,24 +4,25 @@ DISTANCE_TRASHOLD = 1
 
 
 def calc_mean_objects(objects: List[List[float]]) -> List[List[float]]:
-    mean_objects = []
-    
+    mean_object = []
+    # print(objects)
+
     for object in objects:
         is_far = True
-    
-        for ind in range(len(mean_objects) - 1, -1, -1):
-            dist = calc_distance(object, mean_objects[ind]['point'])
+
+        for ind in range(len(mean_object) - 1, -1, -1):
+            dist = calc_distance(object, mean_object[ind]['point'])
     
             if dist <= DISTANCE_TRASHOLD:
                 is_far = False
-                mean_objects[ind]["point"] = calc_mean(mean_objects[ind]["point"], object, mean_objects[ind]["count"])
-                mean_objects[ind]["count"] += 1 
+                mean_object[ind]["point"] = calc_mean(mean_object[ind]["point"], object, mean_object[ind]["count"])
+                mean_object[ind]["count"] += 1 
                 break
     
         if is_far:
-            mean_objects.append({"point": object, "count": 1})
+            mean_object.append({"point": object, "count": 1})
     
-    return mean_objects
+    return mean_object
 
 
 def calc_mean(p1: List[float], p2: List[float], count: int) -> List[float]:

@@ -2,7 +2,7 @@ from drone_control_api import Drone
 
 from drone_pygame_map import DroneDataVisualization
 from motion_manager import StateMachine
-import objects_manager as obj_manager 
+from objects_manager import ObjectManager
 
 from typing import List
 
@@ -22,6 +22,7 @@ class DroneMission:
         self.__client = Drone()
         self.__pygame_visualization = DroneDataVisualization()
         self.__motion_machine = StateMachine(self.__mission_plan, self.__client)
+        self.__obj = ObjectManager()
         
 
     def __connect_to_drone(self) -> None:
@@ -38,9 +39,9 @@ class DroneMission:
 
         self.__motion_machine.process(x, y, yaw)
         
-        obj_manager.process_detections(self.__client.get_detections(), [x, y], yaw)
-        peoples, fires = obj_manager.get_sorted_detections()
-        self.__pygame_visualization.update([x, y, yaw], self.__mission_plan)
+        self.__obj.process_detections(self.__client.get_detections(), [x, y], yaw)
+        objects = self.__obj.get_sorted_detections()
+        self.__pygame_visualization.update([x, y, yaw], self.__mission_plan, objects)
 
         if self.__pygame_visualization.get_is_screenshot():
             cv2.imwrite(f"photos/{round(x, 2)}|{round(y, 2)}|{round(yaw, 4)}|{round(time.time(), 3)}.png", img)
@@ -53,12 +54,6 @@ class DroneMission:
             print("LANDING!!")
             return False
         return True
-    
-    def __periodic_save_detections(self) -> None:
-        if abs(self.__last_time_photo - time.time()) > 3:
-            peoples, fires = obj_manager.get_sorted_detections()
-            obj_manager.save_detections(peoples, fires)
-            self.__last_time_photo = time.time()
     
     def run_mission(self) -> None:
         self.__connect_to_drone()
