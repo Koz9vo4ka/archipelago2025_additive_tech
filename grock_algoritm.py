@@ -5,7 +5,6 @@ DISTANCE_TRASHOLD = 1
 
 def calc_mean_objects(objects: List[List[float]]) -> List[List[float]]:
     mean_object = []
-    # print(objects)
 
     for object in objects:
         is_far = True
@@ -26,7 +25,7 @@ def calc_mean_objects(objects: List[List[float]]) -> List[List[float]]:
 
 
 def calc_mean(p1: List[float], p2: List[float], count: int) -> List[float]:
-    return [(p1[0]*count + p2[0]) / (count+1), (p1[1]*count + p2[1]) / (count+1)]
+    return [(p1[0] * count + p2[0]) / (count + 1), (p1[1] * count + p2[1]) / (count + 1)]
 
 
 def calc_distance(p1: List[float], p2: List[float]) -> float:

@@ -1,7 +1,12 @@
+"""
+Надо чтобы было движение по точкам и при обнаружении новых объектов мы шли обрабатывать их
+"""
+
+from drone_control_api import Drone
+
 from grock_algoritm import calc_distance
-from typing import List, Tuple
+from typing import List
 from math import degrees
-import math
 
 
 def calc_angle_error(ang_1: float, ang_2: float) -> float:
@@ -11,20 +16,38 @@ def calc_angle_error(ang_1: float, ang_2: float) -> float:
 
 
 class StateMachine:
-    def __init__(self, mission, client):
-        self.__DISTANCE_TRASHOLD_M = 0.55
+    def __init__(self, mission:List, client: Drone, target_alt: float) -> None:
+        self.__DISTANCE_TRASHOLD_M = 0.25
         self.__YAW_TRASHOLD_DEG = 10
+        
+        self.__is_above_the_object = False
 
         self.__targets = mission
         self.__client = client
+        self.__FLOWER_ALT = 0.5
+        self.__TARGET_ALT = target_alt
+        
+        self.__last_alt = None
 
-    def process(self, x: float, y: float, yaw: float) -> None:
+    def process(self, pose: List[float], rpy: List[float]) -> None:
+        self.__horirontal_motion(pose, rpy)
+        self.__vertical_motion(pose[2])
+    
+    def get_flowers_height(self, alt: float) -> float:
+        if self.__is_above_the_object:
+            return alt
+        return alt - self.__FLOWER_ALT
+    
+    def get_is_above_object(self) -> bool:
+        return self.__is_above_the_object
+    
+    def __horirontal_motion(self, pose: List[float], rpy: List[float]) -> None:
         target = self.__get_target()
         mission_type = len(target)
         if mission_type == 2:  # go to
-            is_complete = self.__move_state([x, y], target)
+            is_complete = self.__move_state(pose[:2], target)
         elif mission_type == 1: # rotate
-            is_complete = self.__rotate_state(yaw, target[0])
+            is_complete = self.__rotate_state(rpy[2], target[0])
         elif mission_type == 0:  # landing
             is_complete = self.__landing_state()
         else:
@@ -33,12 +56,38 @@ class StateMachine:
         if is_complete:
             self.__next_state()
     
+    def __vertical_motion(self, alt: float) -> None:
+        """Метод изменяет высоту полета, когда мы пролетаем над цветками
+
+        Args:
+            alt (float): текущая высота
+        """
+        if self.__last_alt is None:
+            self.__last_alt = alt
+            return
+        
+        delta_alt = alt - self.__last_alt
+        
+        if delta_alt < -self.__FLOWER_ALT:  # Оказались ниже на высоту цветка
+            if not self.__is_above_the_object:
+                self.__set_height_state(self.__TARGET_ALT - self.__FLOWER_ALT)
+            self.__is_above_the_object = True
+        elif delta_alt > self.__FLOWER_ALT:
+            if self.__is_above_the_object:
+                self.__set_height_state(self.__TARGET_ALT)
+            self.__is_above_the_object = False
+    
+    def get_mission(self) -> List[List[float]]:
+        return self.__targets
+    
+    def __set_height_state(self, height: float) -> None:
+        self.__client.set_height_nb(height)
+    
     def is_mission_end(self) -> bool:
         if len(self.__targets) <= 0:
             return True
         return False
-        
-    
+
     def __move_state(self, current_pos: List[float], target_pos: List[float]) -> bool:
         dist = calc_distance(current_pos, target_pos)
 
@@ -51,7 +100,6 @@ class StateMachine:
         return False
 
     def __rotate_state(self, current_yaw: float, target_yaw: float) -> bool:
-        # NOT TESTED
         ang_err = calc_angle_error(degrees(current_yaw), target_yaw)
 
         if ang_err < self.__YAW_TRASHOLD_DEG:
@@ -74,13 +122,6 @@ class StateMachine:
     def __next_state(self) -> None:
         if len(self.__targets) > 0:
             self.__targets.pop(0)
-
-
-    def __calculate_yaw(robot_x, robot_y, object_x, object_y):
-        dx = object_x - robot_x
-        dy = object_y - robot_y
-        yaw = math.atan2(dy, dx)
-        return yaw  # в радианах
 
 
 if __name__ == "__main__":
