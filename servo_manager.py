@@ -7,7 +7,7 @@ class ServoClient:
         """
         Инициализация клиента для управления сервоприводом
         
-        :param host: IP-адрес Orange Pi (по умолчанию 0.0.0.0)
+        :param host: IP-адрес Orange Pi (по умолчанию 192.168.182.182)
         :param port: Порт сервера (по умолчанию 65432)
         """
         self.host: str = host

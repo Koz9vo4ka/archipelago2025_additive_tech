@@ -19,7 +19,7 @@ class StateMachine:
         :param client: API дрона
         :param target_alt: Текущая высота дрона
         """
-        self.__DISTANCE_TRASHOLD_M = 0.25
+        self.__DISTANCE_TRASHOLD_M = 0.5
         self.__YAW_TRASHOLD_DEG = 10
         
         self.__is_above_the_object = False
@@ -133,4 +133,4 @@ class StateMachine:
 
 
 if __name__ == "__main__":
-    pass
+    print(StateMachine([[2,4]], Drone(), 1).get_mission())
