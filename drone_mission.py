@@ -11,7 +11,12 @@ import cv2
 
 
 class DroneMission:
-    def __init__(self, drone_ip: str, mission_plan: List, target_alt) -> None:  
+    def __init__(self, drone_ip: str, mission_plan: List, target_alt: float) -> None:
+        """
+        :param drone_ip: IP адрес OrangePi
+        :param mission_plan: Маршут по которым движется дрон
+        :param target_alt: Текущая высота дрона
+        """
         self.__DRONE_IP = drone_ip
         self.__TARGET_ALT = target_alt
 

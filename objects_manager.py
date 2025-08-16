@@ -6,6 +6,9 @@ import json
 
 class ObjectManager:
     def __init__(self) -> None:
+        """
+        Инициализация определения цветов в пространстве.
+        """
         # Угол обзора
         self.__FOV = 95
         # Трешхолд по площади детекции (не активен)
@@ -82,7 +85,7 @@ class ObjectManager:
             return True
         return False
 
-    def __calc_real_pos_of_detection(self, detections: Dict, current_pos: List[float], rpy: List[float], alt: float=0.5) -> List[Dict]:
+    def __calc_real_pos_of_detection(self, detections: Dict, current_pos: List[float], rpy: List[float]) -> List[Dict]:
         """
         Рассчитывает положение обнаруженных объектов
         

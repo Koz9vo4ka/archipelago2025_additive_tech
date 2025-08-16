@@ -1,8 +1,5 @@
-"""
-Надо чтобы было движение по точкам и при обнаружении новых объектов мы шли обрабатывать их
-"""
-
 from drone_control_api.Drone import Drone
+from servo_manager import ServoClient
 
 from grock_algoritm import calc_distance
 from typing import List
@@ -17,6 +14,11 @@ def calc_angle_error(ang_1: float, ang_2: float) -> float:
 
 class StateMachine:
     def __init__(self, mission:List, client: Drone, target_alt: float) -> None:
+        """
+        :param mission: Маршут по которым движется дрон
+        :param client: API дрона
+        :param target_alt: Текущая высота дрона
+        """
         self.__DISTANCE_TRASHOLD_M = 0.25
         self.__YAW_TRASHOLD_DEG = 10
         
@@ -24,6 +26,7 @@ class StateMachine:
 
         self.__targets = mission
         self.__client = client
+        self.__servo_client = ServoClient()
         self.__FLOWER_ALT = 0.5
         self.__TARGET_ALT = target_alt
         
@@ -73,7 +76,7 @@ class StateMachine:
                 self.__set_height_state(self.__TARGET_ALT - self.__FLOWER_ALT)
                 # Вызываем drop_corn_to_flower только при переходе из False в True
                 if not self.__was_above_the_object:
-                    self.__client.drop_corn_to_flower()
+                    self.__servo_client.drop_corn_to_flower()
                     self.__was_above_the_object = True
             self.__is_above_the_object = True
         elif delta_alt > self.__FLOWER_ALT:

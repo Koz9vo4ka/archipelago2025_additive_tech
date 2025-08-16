@@ -4,7 +4,9 @@ import pygame
 
 class DroneDataVisualization:
     def __init__(self) -> None:
-
+        """
+        Инициализация pygame программы для отображения дрона и цветов в реальном времени.
+        """
         pygame.init()
         pygame.font.init()
 
