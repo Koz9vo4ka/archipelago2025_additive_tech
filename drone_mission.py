@@ -24,8 +24,9 @@ class DroneMission:
         print(self.__client.connect(self.__DRONE_IP, reset_state=True))
 
     def __taking_off(self, altitude: float) -> None:
+        print(f"START TAKE OFF!! set_height = {altitude}")
         self.__client.set_height(altitude)
-        print(f"TAKE OFF!! set_height = {altitude}")
+        print(f"TAKE OFF!!")
     
     def __drop_corn(self):
         pass
@@ -39,7 +40,7 @@ class DroneMission:
         mission = self.__motion_machine.get_mission()
         
         flowers_alt = self.__motion_machine.get_flowers_height(pose[2])
-        self.__obj.process_detections(self.__client.get_detections(), [*pose[:2], flowers_alt], rpy)
+        # self.__obj.process_detections(self.__client.get_detections(), [*pose[:2], flowers_alt], rpy)
         objects = self.__obj.get_sorted_detections()
         
         self.__pygame_visualization.update([*pose[:2], rpy[2]], mission, objects)
@@ -60,11 +61,17 @@ class DroneMission:
         img = self.__client.get_image()
         pose = self.__client.get_odom_opticflow()
         rpy = self.__client.get_rpy()
+        
+        if not isinstance(pose, list) and len(pose) == 3:
+            print(f"wrong pose: {pose}")
+        if not isinstance(rpy, list) and len(rpy) == 3:
+            print(f"wrong rpy: {rpy}")
+        
         return pose, rpy, img
 
     def run_mission(self) -> None:
         self.__connect_to_drone()
-        # self.__taking_off(self.__TARGET_ALT)
+        self.__taking_off(self.__TARGET_ALT)
         
         while True:
             self.__update()

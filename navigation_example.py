@@ -24,8 +24,10 @@ break_flag = False
 
 
 while not break_flag:
-    data = client.get_detections()
+    
+    img = client.get_image()
     print(client.get_rpy())
+    cv2.imshow('ewretry', img)
 
 print(result)
 
