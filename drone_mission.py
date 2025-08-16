@@ -1,4 +1,4 @@
-from drone_control_api import Drone
+from drone_control_api.Drone import Drone
 
 from drone_pygame_map import DroneDataVisualization
 from motion_manager import StateMachine
@@ -64,7 +64,7 @@ class DroneMission:
 
     def run_mission(self) -> None:
         self.__connect_to_drone()
-        self.__taking_off(self.__TARGET_ALT)
+        # self.__taking_off(self.__TARGET_ALT)
         
         while True:
             self.__update()

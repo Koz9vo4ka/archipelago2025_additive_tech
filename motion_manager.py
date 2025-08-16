@@ -2,7 +2,7 @@
 Надо чтобы было движение по точкам и при обнаружении новых объектов мы шли обрабатывать их
 """
 
-from drone_control_api import Drone
+from drone_control_api.Drone import Drone
 
 from grock_algoritm import calc_distance
 from typing import List
@@ -71,10 +71,15 @@ class StateMachine:
         if delta_alt < -self.__FLOWER_ALT:  # Оказались ниже на высоту цветка
             if not self.__is_above_the_object:
                 self.__set_height_state(self.__TARGET_ALT - self.__FLOWER_ALT)
+                # Вызываем drop_corn_to_flower только при переходе из False в True
+                if not self.__was_above_the_object:
+                    self.__client.drop_corn_to_flower()
+                    self.__was_above_the_object = True
             self.__is_above_the_object = True
         elif delta_alt > self.__FLOWER_ALT:
             if self.__is_above_the_object:
                 self.__set_height_state(self.__TARGET_ALT)
+                self.__was_above_the_object = False
             self.__is_above_the_object = False
     
     def get_mission(self) -> List[List[float]]:
